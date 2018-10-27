@@ -17,7 +17,7 @@
               font-size: small;
             }
 
-            text{
+            text, path{
                 cursor: pointer;
             }
             text.zone, text.state{
@@ -127,12 +127,12 @@
             });
 
         
-        $(document).on('click', 'text.zone', function(){
+        $(document).on('click', '.zone', function(){
                 console.log($(this).data('id'));
                 change(data_state, $(this).data('id'));
             });
 
-        $(document).on('click', 'text.state', function(){
+        $(document).on('click', '.state', function(){
                 console.log($(this).data('id'));
                 change(data_city, $(this).data('id'));
             });
@@ -152,6 +152,12 @@
             slice.enter()                
                 .insert("path")                
                 .attr("class", "slice")
+                .attr("data-id", function(d) {
+                    return d.data.key;
+                })
+                .attr("class", function(d) {
+                    return d.data.class;
+                })
                 .style("stroke", "white")
                 .style("stroke-width", "1px")
                 .style("fill", function(d) { return color(d.data.zone); })
