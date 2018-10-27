@@ -1,15 +1,10 @@
 var LocalStrategy   = require('passport-local').Strategy;
-
-var User            = require('../app/models/home');
-
-var bcrypt = require('bcrypt-nodejs');
-
-var configAuth = require('./auth.js');
-var constant = require('../config/constants');
-var dateFormat = require('dateformat');
-var fs = require('fs');
-
-var bcrypt = require('bcrypt-nodejs');
+var User            = require('../app/models/user');
+var configAuth      = require('./auth.js');
+var constant        = require('../config/constants');
+var dateFormat      = require('dateformat');
+var fs              = require('fs');
+var bcrypt          = require('bcrypt-nodejs');
 
 
 //expose this function to our app using module.exports
