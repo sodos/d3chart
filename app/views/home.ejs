@@ -12,13 +12,18 @@
         <link rel="stylesheet" href="/css/style.css">
         <style>
             body {
-              font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-              width: 960px;
-              height: 500px;
+              font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;        
               position: relative;
               font-size: small;
             }
 
+            text{
+                cursor: pointer;
+            }
+            text.zone, text.state{
+                background: black;
+                color: white;
+            }
             svg {
                 width: 100%;
                 height: 100%;
@@ -38,12 +43,12 @@
     </head>
     <body>        
         <div class="container">
-            <div class="col-md-12" style="text-align:center">
-                <button class="show_zone btn btn-primary">Show Zone</button>
-                <button class="show_state btn btn-primary">Show State</button>
-                <button class="show_city btn btn-primary">Show City</button>
-                <div class="pie" style="height:450px;"></div>
+            <div class="col-md-12" style="text-align:center">               
+                <div class="pie" style="height:450px;"></div>                
             </div>
+            <button class="show_zone btn btn-primary">Show Zone</button>
+            <button class="show_state btn btn-primary">Show State</button>
+            <button class="show_city btn btn-primary">Show City</button>
         </div>
     </body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -95,15 +100,15 @@
         //     });
         // }
         var data_zone = [];
-        <% for(var i=0; i<sales_zone.length; i++) { %>data_zone.push({zone:'<%=sales_zone[i].zone%>',label:'<%=sales_zone[i].zone%> (<%=sales_zone[i].sale%>)',value:<%=sales_zone[i].sale%>});
+        <% for(var i=0; i<sales_zone.length; i++) { %>data_zone.push({class:'zone',zone:'<%=sales_zone[i].zone%>',key:'<%=sales_zone[i].zone%>',label:'<%=sales_zone[i].zone%> (<%=sales_zone[i].sale%>)',value:<%=sales_zone[i].sale%>});
         <%}%>
 
         var data_state = [];
-        <% for(var i=0; i<sales_state.length; i++) { %>data_state.push({zone:'<%=sales_state[i].zone%>',label:'<%=sales_state[i].state%> (<%=sales_state[i].sale%>)',value:<%=sales_state[i].sale%>});
+        <% for(var i=0; i<sales_state.length; i++) { %>data_state.push({class:'state',filter:'<%=sales_state[i].zone%>',zone:'<%=sales_state[i].zone%>',key:'<%=sales_state[i].state%>',label:'<%=sales_state[i].state%> (<%=sales_state[i].sale%>)',value:<%=sales_state[i].sale%>});
         <%}%>
 
         var data_city = [];
-        <% for(var i=0; i<sales_city.length; i++) { %>data_city.push({zone:'<%=sales_city[i].zone%>',label:'<%=sales_city[i].city%> (<%=sales_city[i].sale%>)',value:<%=sales_city[i].sale%>});
+        <% for(var i=0; i<sales_city.length; i++) { %>data_city.push({class:'city',filter:'<%=sales_city[i].state%>',zone:'<%=sales_city[i].zone%>',key:'<%=sales_city[i].city%>',label:'<%=sales_city[i].city%> (<%=sales_city[i].sale%>)',value:<%=sales_city[i].sale%>});
         <%}%>
 
         change(data_zone);
@@ -121,9 +126,25 @@
                 change(data_city);
             });
 
+        
+        $(document).on('click', 'text.zone', function(){
+                console.log($(this).data('id'));
+                change(data_state, $(this).data('id'));
+            });
 
-        function change(data) {
+        $(document).on('click', 'text.state', function(){
+                console.log($(this).data('id'));
+                change(data_city, $(this).data('id'));
+            });
 
+
+        function change(data, filter='') {
+            
+            if(filter != ''){
+                var tmp_data = data.filter(function (el) {return el.filter === filter });
+                data = tmp_data;    
+            }
+            
             /* ------- PIE SLICES -------*/
             var slice = svg.select(".slices").selectAll("path.slice")
                 .data(pie(data), key);
@@ -132,7 +153,7 @@
                 .insert("path")                
                 .attr("class", "slice")
                 .style("stroke", "white")
-                .style("stroke-width", "0.5px")
+                .style("stroke-width", "1px")
                 .style("fill", function(d) { return color(d.data.zone); })
 
             slice       
@@ -157,6 +178,12 @@
             text.enter()
                 .append("text")                
                 .attr("dy", ".35em")
+                .attr("data-id", function(d) {
+                    return d.data.key;
+                })
+                .attr("class", function(d) {
+                    return d.data.class;
+                })
                 .text(function(d) {
                     return d.data.label;
                 });
