@@ -91,7 +91,7 @@ exports.home = function(req, res) {
             }else{
                 //@ update the sale count
                 return_array_date_s[index_date_s].sale = return_array_date_s[index_date_s].sale + 1;
-                return_array_date_s[index_date].net_amount_sum = return_array_date_s[index_date].net_amount_sum + row.net_amount_sum;
+                return_array_date_s[index_date_s].net_amount_sum = return_array_date_s[index_date_s].net_amount_sum + row.net_amount_sum;
             }
 
             var c_z = d.getMonth() + '_' + d.getFullYear() + '_' + zone;
@@ -103,7 +103,7 @@ exports.home = function(req, res) {
             }else{
                 //@ update the sale count
                 return_array_date_z[index_date_z].sale = return_array_date_z[index_date_z].sale + 1;
-                return_array_date_z[index_date].net_amount_sum = return_array_date_z[index_date].net_amount_sum + row.net_amount_sum;
+                return_array_date_z[index_date_z].net_amount_sum = return_array_date_z[index_date_z].net_amount_sum + row.net_amount_sum;
             }
 
         });
