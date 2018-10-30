@@ -242,7 +242,7 @@
 
         
         $(document).on('click', '.zone', function(){
-            console.log($(this).data('id'));
+            // console.log($(this).data('id'));
             change(data_state, $(this).data('id'));
             bar_chart_change1(data_date_z, $(this).data('id'));
             bar_chart_change2(data_date_z, $(this).data('id'));
@@ -251,7 +251,7 @@
         });
 
         $(document).on('click', '.state', function(){
-            console.log($(this).data('id'));
+            // console.log($(this).data('id'));
             change(data_city, $(this).data('id'));
             bar_chart_change1(data_date_s, $(this).data('id'));
             bar_chart_change2(data_date_s, $(this).data('id'));
@@ -403,8 +403,8 @@
             data.forEach(function(d) {                                
                 tmp = d.date_s.split(' ');
                 tmp = tmp[0].split('-');                
-                d.date = new Date(tmp[0],tmp[1]-1,tmp[2]);
-                // console.log(d.date);
+                d.date = new Date(tmp[0],tmp[1],1);
+                console.log(d.date);
                 d.value = +d.value;
             });            
 
@@ -476,7 +476,7 @@
             data.forEach(function(d) {                                
                 tmp = d.date_s.split(' ');
                 tmp = tmp[0].split('-');                
-                d.date = new Date(tmp[0],tmp[1]-1,tmp[2]);
+                d.date = new Date(tmp[0],tmp[1],1);
                 // console.log(d.date);
                 d.value = +d.value;
             });
@@ -672,7 +672,7 @@
             data.forEach(function(d) {                                
                 tmp = d.date_s.split(' ');
                 tmp = tmp[0].split('-');                
-                d.date = new Date(tmp[0],tmp[1]-1,tmp[2]);
+                d.date = new Date(tmp[0],tmp[1],1);
                 // console.log(d.date);
                 d.amount = +d.amount;
             });            
@@ -746,7 +746,7 @@
             data.forEach(function(d) {                                
                 tmp = d.date_s.split(' ');
                 tmp = tmp[0].split('-');                
-                d.date = new Date(tmp[0],tmp[1]-1,tmp[2]);
+                d.date = new Date(tmp[0],tmp[1],1);
                 // console.log(d.date);
                 d.amount = +d.amount;
             });
