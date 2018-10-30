@@ -48,6 +48,20 @@
                 padding: 0% 1%;
                 margin-right: 15px;
             }
+
+            .line-chart path { 
+                stroke: steelblue;
+                stroke-width: 2;
+                fill: none;
+            }
+
+            .chart .axis path,
+            .chart .axis line {
+                fill: none;
+                stroke: grey;
+                stroke-width: 1;
+                shape-rendering: crispEdges;
+            }
         </style>
     </head>
     <body>        
@@ -60,9 +74,12 @@
             </div>
             <div class="col-md-4">
                 <div id="bar-chart1" class="chart" style="height:220px;"></div>
-                <div id="bar-chart2"  class="chart" style="height:220px;margin-top: 10px;"></div>
+                <div id="line-chart1" class="chart line-chart" style="height:220px;margin-top: 10px;"></div>                
             </div>
             <label class="pull-right notice"> ...</label>
+            <div class="clear" style="clear:both"></div>
+            <div class="col-md-6"><div id="bar-chart2"  class="chart" style="height:300px;"></div></div>
+            <div class="col-md-6"><div id="line-chart2" class="chart line-chart" style="height:300px;"></div></div>
         </div>
     </body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -84,7 +101,11 @@
         var margin = {top: 20, right: 5, bottom: 70, left: 60},
             width2 = 350 - margin.left - margin.right,
             height2 = 220 - margin.top - margin.bottom;
-            
+        
+        var margin = {top: 20, right: 5, bottom: 70, left: 60},
+            width3 = 500 - margin.left - margin.right,
+            height3 = 300 - margin.top - margin.bottom;
+
         var svg2 = d3.select("div#bar-chart1").append("svg")
             .attr("width", width2 + margin.left + margin.right)
             .attr("height", height2 + margin.top + margin.bottom)
@@ -93,11 +114,29 @@
                   "translate(" + margin.left + "," + margin.top + ")");
 
         var svg3 = d3.select("div#bar-chart2").append("svg")
-            .attr("width", width2 + margin.left + margin.right)
-            .attr("height", height2 + margin.top + margin.bottom)
+            .attr("width", width3 + margin.left + margin.right)
+            .attr("height", height3 + margin.top + margin.bottom)
             .append("g")
             .attr("transform", 
                   "translate(" + margin.left + "," + margin.top + ")");
+
+        // Adds the svg canvas
+        var svg4 = d3.select("div#line-chart1")
+            .append("svg")
+                .attr("width", width2 + margin.left + margin.right)
+                .attr("height", height2 + margin.top + margin.bottom)
+            .append("g")
+                .attr("transform", 
+                      "translate(" + margin.left + "," + margin.top + ")");
+
+        // Adds the svg canvas
+        var svg5 = d3.select("div#line-chart2")
+            .append("svg")
+                .attr("width", width3 + margin.left + margin.right)
+                .attr("height", height3 + margin.top + margin.bottom)
+            .append("g")
+                .attr("transform", 
+                      "translate(" + margin.left + "," + margin.top + ")");
 
 
         var width = 700,
@@ -148,35 +187,57 @@
         <% for(var i=0; i<sales_date.length; i++) { %>data_date.push({date_s:'<%=sales_date[i].date%>',value:<%=sales_date[i].sale%>, amount:<%=sales_date[i].net_amount_sum%>});
         <%}%>
 
+        var data_line = [];
+        <% for(var i=0; i<sales_line.length; i++) { %>data_line.push({date_s:'<%=sales_line[i].date%>',value:<%=sales_line[i].sale%>, amount:<%=sales_line[i].net_amount_sum%>});
+        <%}%>
+
         var data_date_s = [];
         <% for(var i=0; i<sales_date_s.length; i++) { %>data_date_s.push({date_s:'<%=sales_date_s[i].date%>',value:<%=sales_date_s[i].sale%>, filter:'<%=sales_date_s[i].state%>', amount:<%=sales_date_s[i].net_amount_sum%>});
+        <%}%>
+
+        var data_line_s = [];
+        <% for(var i=0; i<sales_line_s.length; i++) { %>data_line_s.push({date_s:'<%=sales_line_s[i].date%>',value:<%=sales_line_s[i].sale%>, filter:'<%=sales_line_s[i].state%>', amount:<%=sales_line_s[i].net_amount_sum%>});
         <%}%>
         
         var data_date_z = [];
         <% for(var i=0; i<sales_date_z.length; i++) { %>data_date_z.push({date_s:'<%=sales_date_z[i].date%>',value:<%=sales_date_z[i].sale%>, filter:'<%=sales_date_z[i].zone%>', amount:<%=sales_date_z[i].net_amount_sum%>});
+        <%}%>
+
+        var data_line_z = [];
+        <% for(var i=0; i<sales_line_z.length; i++) { %>data_line_z.push({date_s:'<%=sales_line_z[i].date%>',value:<%=sales_line_z[i].sale%>, filter:'<%=sales_line_z[i].zone%>', amount:<%=sales_line_z[i].net_amount_sum%>});
         <%}%>
         
 
         change(data_zone);
         bar_chart1(data_date);
         bar_chart2(data_date);
+
+        line_chart1(data_line);
+        line_chart2(data_line);
+
         d3.select(".show_zone")
             .on("click", function(){
                 change(data_zone);
                 bar_chart_change1(data_date);
                 bar_chart_change2(data_date);
+                line_chart_change1(data_line);
+                line_chart_change2(data_line);
             });
         d3.select(".show_state")
             .on("click", function(){
                 change(data_state);
                 bar_chart_change1(data_date);
                 bar_chart_change2(data_date);
+                line_chart_change1(data_line);
+                line_chart_change2(data_line);
             });
         d3.select(".show_city")
             .on("click", function(){
                 change(data_city);
                 bar_chart_change1(data_date);
                 bar_chart_change2(data_date);
+                line_chart_change1(data_line);
+                line_chart_change2(data_line);
             });
 
         
@@ -185,6 +246,8 @@
             change(data_state, $(this).data('id'));
             bar_chart_change1(data_date_z, $(this).data('id'));
             bar_chart_change2(data_date_z, $(this).data('id'));
+            line_chart_change1(data_line_z, $(this).data('id'));
+            line_chart_change2(data_line_z, $(this).data('id'));
         });
 
         $(document).on('click', '.state', function(){
@@ -192,6 +255,8 @@
             change(data_city, $(this).data('id'));
             bar_chart_change1(data_date_s, $(this).data('id'));
             bar_chart_change2(data_date_s, $(this).data('id'));
+            line_chart_change1(data_line_s, $(this).data('id'));
+            line_chart_change2(data_line_s, $(this).data('id'));
         });        
 
         function change(data, filter='') {
@@ -332,14 +397,14 @@
             var yAxis = d3.svg.axis()
                 .scale(y)
                 .orient("left")
-                .ticks(10);
+                .ticks(5);
 
-            console.log(data);
+            // console.log(data);
             data.forEach(function(d) {                                
                 tmp = d.date_s.split(' ');
                 tmp = tmp[0].split('-');                
                 d.date = new Date(tmp[0],tmp[1]-1,tmp[2]);
-                console.log(d.date);
+                // console.log(d.date);
                 d.value = +d.value;
             });            
 
@@ -405,9 +470,9 @@
             var yAxis = d3.svg.axis()
                 .scale(y)
                 .orient("left")
-                .ticks(10);
+                .ticks(5);
 
-            console.log(data);
+            // console.log(data);
             data.forEach(function(d) {                                
                 tmp = d.date_s.split(' ');
                 tmp = tmp[0].split('-');                
@@ -450,10 +515,147 @@
                   .attr("height", function(d) { return height2 - y(d.value); });            
         }
 
+        function line_chart1(data) {
+
+            // Parse the date / time
+            var parseDate = d3.time.format("%d-%b-%y").parse;
+
+            // Set the ranges
+            var x = d3.time.scale().range([0, width2]);
+            var y = d3.scale.linear().range([height2, 0]);
+
+            // Define the axes
+            var xAxis = d3.svg.axis().scale(x)
+                .orient("bottom").ticks(5);
+
+            var yAxis = d3.svg.axis().scale(y)
+                .orient("left").ticks(5);
+
+            // Define the line
+            var valueline = d3.svg.line()
+                .x(function(d) { return x(d.date); })
+                .y(function(d) { return y(d.value); });            
+
+            data.forEach(function(d) {
+                tmp = d.date_s.split(' ');
+                tmp = tmp[0].split('-');                
+                d.date = new Date(tmp[0],tmp[1]-1,tmp[2]);
+                // console.log(d.date);
+                d.value = +d.value;
+            });
+
+            // Scale the range of the data
+            x.domain(d3.extent(data, function(d) { return d.date; }));
+            y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+            // Add the valueline path.
+            svg4.append("path")
+                .attr("class", "line")
+                .attr("d", valueline(data));
+
+            // Add the X Axis
+            svg4.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height2 + ")")
+                .call(xAxis)
+               .selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", "-.55em")
+                .attr("transform", "rotate(-90)" );
+
+            // Add the Y Axis
+            svg4.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+              .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text("sale");
+        }
+
+        function line_chart_change1(data, filter='') {
+            
+            if(filter != ''){
+                var tmp_data = data.filter(function (el) {return el.filter === filter });
+                data = tmp_data;    
+            }                       
+
+            d3.select("div#line-chart1").select("svg").remove();
+
+            var svg4 = d3.select("div#line-chart1")
+                .append("svg")
+                    .attr("width", width2 + margin.left + margin.right)
+                    .attr("height", height2 + margin.top + margin.bottom)
+                .append("g")
+                    .attr("transform", 
+                          "translate(" + margin.left + "," + margin.top + ")");
+
+            // Parse the date / time
+            var parseDate = d3.time.format("%d-%b-%y").parse;
+
+            // Set the ranges
+            var x = d3.time.scale().range([0, width2]);
+            var y = d3.scale.linear().range([height2, 0]);
+
+            // Define the axes
+            var xAxis = d3.svg.axis().scale(x)
+                .orient("bottom").ticks(5);
+
+            var yAxis = d3.svg.axis().scale(y)
+                .orient("left").ticks(5);
+
+            // Define the line
+            var valueline = d3.svg.line()
+                .x(function(d) { return x(d.date); })
+                .y(function(d) { return y(d.value); });            
+
+            data.forEach(function(d) {
+                tmp = d.date_s.split(' ');
+                tmp = tmp[0].split('-');                
+                d.date = new Date(tmp[0],tmp[1]-1,tmp[2]);
+                // console.log(d.date);
+                d.value = +d.value;
+            });
+
+            // Scale the range of the data
+            x.domain(d3.extent(data, function(d) { return d.date; }));
+            y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+            // Add the valueline path.
+            svg4.append("path")
+                .attr("class", "line")
+                .attr("d", valueline(data));
+
+            // Add the X Axis
+            svg4.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height2 + ")")
+                .call(xAxis)
+               .selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", "-.55em")
+                .attr("transform", "rotate(-90)" );
+
+            // Add the Y Axis
+            svg4.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+              .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text("sale");           
+        }
+
         function bar_chart2(data) {
             
-            var x = d3.scale.ordinal().rangeRoundBands([0, width2], .05);
-            var y = d3.scale.linear().range([height2, 0]);
+            var x = d3.scale.ordinal().rangeRoundBands([0, width3], .05);
+            var y = d3.scale.linear().range([height3, 0]);
 
             var xAxis = d3.svg.axis()
                 .scale(x)
@@ -463,15 +665,15 @@
             var yAxis = d3.svg.axis()
                 .scale(y)
                 .orient("left")                
-                .ticks(10)
+                .ticks(5)
                 .tickFormat(nFormatter);
 
-            console.log(data);
+            // console.log(data);
             data.forEach(function(d) {                                
                 tmp = d.date_s.split(' ');
                 tmp = tmp[0].split('-');                
                 d.date = new Date(tmp[0],tmp[1]-1,tmp[2]);
-                console.log(d.date);
+                // console.log(d.date);
                 d.amount = +d.amount;
             });            
 
@@ -480,7 +682,7 @@
 
             svg3.append("g")
                   .attr("class", "x axis")
-                  .attr("transform", "translate(0," + height2 + ")")
+                  .attr("transform", "translate(0," + height3 + ")")
                   .call(xAxis)
                 .selectAll("text")
                   .style("text-anchor", "end")
@@ -505,7 +707,7 @@
                   .attr("x", function(d) { return x(d.date); })
                   .attr("width", x.rangeBand())
                   .attr("y", function(d) { return y(d.amount); })
-                  .attr("height", function(d) { return height2 - y(d.amount); });            
+                  .attr("height", function(d) { return height3 - y(d.amount); });            
         }
 
         function bar_chart_change2(data, filter='') {
@@ -520,14 +722,14 @@
             d3.select("div#bar-chart2").select("svg").remove();
 
             var svg3 = d3.select("div#bar-chart2").append("svg")
-                .attr("width", width2 + margin.left + margin.right)
-                .attr("height", height2 + margin.top + margin.bottom)
+                .attr("width", width3 + margin.left + margin.right)
+                .attr("height", height3 + margin.top + margin.bottom)
                 .append("g")
                 .attr("transform", 
                       "translate(" + margin.left + "," + margin.top + ")");
 
-            var x = d3.scale.ordinal().rangeRoundBands([0, width2], .05);
-            var y = d3.scale.linear().range([height2, 0]);
+            var x = d3.scale.ordinal().rangeRoundBands([0, width3], .05);
+            var y = d3.scale.linear().range([height3, 0]);
 
             var xAxis = d3.svg.axis()
                 .scale(x)
@@ -537,7 +739,7 @@
             var yAxis = d3.svg.axis()
                 .scale(y)
                 .orient("left")                
-                .ticks(10)
+                .ticks(5)
                 .tickFormat(nFormatter);
 
             // console.log(data);
@@ -555,7 +757,7 @@
 
             svg3.append("g")
                   .attr("class", "x axis")
-                  .attr("transform", "translate(0," + height2 + ")")
+                  .attr("transform", "translate(0," + height3 + ")")
                   .call(xAxis)
                 .selectAll("text")
                   .style("text-anchor", "end")
@@ -580,9 +782,134 @@
                   .attr("x", function(d) { return x(d.date); })
                   .attr("width", x.rangeBand())
                   .attr("y", function(d) { return y(d.amount); })
-                  .attr("height", function(d) { return height2 - y(d.amount); });            
+                  .attr("height", function(d) { return height3 - y(d.amount); });            
         }
 
+        function line_chart2(data) {
+            // Parse the date / time
+            var parseDate = d3.time.format("%d-%b-%y").parse;
+
+            // Set the ranges
+            var x = d3.time.scale().range([0, width3]);
+            var y = d3.scale.linear().range([height3, 0]);
+
+            // Define the axes
+            var xAxis = d3.svg.axis().scale(x)
+                .orient("bottom").ticks(5);
+
+            var yAxis = d3.svg.axis().scale(y)
+                .orient("left").ticks(5).tickFormat(nFormatter);
+
+            // Define the line
+            var valueline = d3.svg.line()
+                .x(function(d) { return x(d.date); })
+                .y(function(d) { return y(d.amount); });
+
+            data.forEach(function(d) {
+                tmp = d.date_s.split(' ');
+                tmp = tmp[0].split('-');                
+                d.date = new Date(tmp[0],tmp[1]-1,tmp[2]);
+                // console.log(d.date);
+                d.amount = +d.amount;
+            });
+
+            // Scale the range of the data
+            x.domain(d3.extent(data, function(d) { return d.date; }));
+            y.domain([0, d3.max(data, function(d) { return d.amount; })]);
+
+            // Add the valueline path.
+            svg5.append("path")
+                .attr("class", "line")
+                .attr("d", valueline(data));
+
+            // Add the X Axis
+            svg5.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height3 + ")")
+                .call(xAxis);
+
+            // Add the Y Axis
+            svg5.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+              .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text("Rs.");
+        }
+
+        function line_chart_change2(data, filter='') {
+
+            if(filter != ''){
+                var tmp_data = data.filter(function (el) {return el.filter === filter });
+                data = tmp_data;    
+            }                       
+
+            d3.select("div#line-chart2").select("svg").remove();
+
+            var svg5 = d3.select("div#line-chart2")
+                .append("svg")
+                    .attr("width", width2 + margin.left + margin.right)
+                    .attr("height", height2 + margin.top + margin.bottom)
+                .append("g")
+                    .attr("transform", 
+                          "translate(" + margin.left + "," + margin.top + ")");
+
+            // Parse the date / time
+            var parseDate = d3.time.format("%d-%b-%y").parse;
+
+            // Set the ranges
+            var x = d3.time.scale().range([0, width3]);
+            var y = d3.scale.linear().range([height3, 0]);
+
+            // Define the axes
+            var xAxis = d3.svg.axis().scale(x)
+                .orient("bottom").ticks(5);
+
+            var yAxis = d3.svg.axis().scale(y)
+                .orient("left").ticks(5).tickFormat(nFormatter);
+
+            // Define the line
+            var valueline = d3.svg.line()
+                .x(function(d) { return x(d.date); })
+                .y(function(d) { return y(d.amount); });
+
+            data.forEach(function(d) {
+                tmp = d.date_s.split(' ');
+                tmp = tmp[0].split('-');                
+                d.date = new Date(tmp[0],tmp[1]-1,tmp[2]);
+                // console.log(d.date);
+                d.amount = +d.amount;
+            });
+
+            // Scale the range of the data
+            x.domain(d3.extent(data, function(d) { return d.date; }));
+            y.domain([0, d3.max(data, function(d) { return d.amount; })]);
+
+            // Add the valueline path.
+            svg5.append("path")
+                .attr("class", "line")
+                .attr("d", valueline(data));
+
+            // Add the X Axis
+            svg5.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height3 + ")")
+                .call(xAxis);
+
+            // Add the Y Axis
+            svg5.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+              .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text("Rs.");
+        }
         
     </script>
 </html>

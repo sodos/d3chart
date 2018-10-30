@@ -19,14 +19,21 @@ exports.home = function(req, res) {
 	var return_array_city = [];
     var return_array_date = [];
     var return_array_date_s = [];
-    var return_array_date_z = [];
-    
+    var return_array_date_z = [];    
+
     var check_array_zone = [];
     var check_array_state = [];
     var check_array_city = [];
     var check_array_date = [];
     var check_array_date_s = [];
     var check_array_date_z = [];
+
+    var return_array_line = [];
+    var check_array_line = [];
+    var return_array_line_s = [];
+    var check_array_line_s = [];
+    var return_array_line_z = [];
+    var check_array_line_z = [];
 
 	record.find().select(['state','city','bill_date','net_amount_sum']).exec(function(err, records) {
 
@@ -105,6 +112,47 @@ exports.home = function(req, res) {
                 return_array_date_z[index_date_z].sale = return_array_date_z[index_date_z].sale + 1;
                 return_array_date_z[index_date_z].net_amount_sum = return_array_date_z[index_date_z].net_amount_sum + row.net_amount_sum;
             }
+            
+            if(d.getFullYear() == 2016) {
+	            var day = (d.getDate() - 1);
+	            var c_l = String(day)+'_'+ d.getMonth()+'_'+ d.getFullYear();
+	            var index_line = check_array_line.indexOf(c_l);
+	            if(check_array_line.indexOf(c_l) < 0){
+	                check_array_line.push(c_l);
+	                tmp = d.toISOString().replace(/T/, ' ').replace(/\..+/, '')
+	                return_array_line.push({date:tmp,sale:1, net_amount_sum:row.net_amount_sum});
+	            }else{
+	                //@ update the sale count
+	                return_array_line[index_line].sale = return_array_line[index_line].sale + 1;
+	                return_array_line[index_line].net_amount_sum = return_array_line[index_line].net_amount_sum + row.net_amount_sum;
+	            }
+
+	            var day = (d.getDate() - 1);
+	            var c_lz = String(day)+'_'+ d.getMonth()+'_'+ d.getFullYear() + '_' + zone;
+	            var index_line_z = check_array_line_z.indexOf(c_lz);
+	            if(check_array_line_z.indexOf(c_lz) < 0){
+	                check_array_line_z.push(c_lz);
+	                tmp = d.toISOString().replace(/T/, ' ').replace(/\..+/, '')
+	                return_array_line_z.push({zone:zone,date:tmp,sale:1, net_amount_sum:row.net_amount_sum});
+	            }else{
+	                //@ update the sale count
+	                return_array_line_z[index_line_z].sale = return_array_line_z[index_line_z].sale + 1;
+	                return_array_line_z[index_line_z].net_amount_sum = return_array_line_z[index_line_z].net_amount_sum + row.net_amount_sum;
+	            }
+
+	            var day = (d.getDate() - 1);
+	            var c_ls = String(day)+'_'+ d.getMonth()+'_'+ d.getFullYear() + '_' + row.state.toLowerCase();
+	            var index_line_s = check_array_line_s.indexOf(c_ls);
+	            if(check_array_line_s.indexOf(c_ls) < 0){
+	                check_array_line_s.push(c_ls);
+	                tmp = d.toISOString().replace(/T/, ' ').replace(/\..+/, '')
+	                return_array_line_s.push({state:row.state,date:tmp,sale:1, net_amount_sum:row.net_amount_sum});
+	            }else{
+	                //@ update the sale count
+	                return_array_line_s[index_line_s].sale = return_array_line_s[index_line_s].sale + 1;
+	                return_array_line_s[index_line_s].net_amount_sum = return_array_line_s[index_line_s].net_amount_sum + row.net_amount_sum;
+	            }
+	        }
 
         });
         
@@ -162,6 +210,33 @@ exports.home = function(req, res) {
             return 0 //default return value (no sorting)
         });
 
+        return_array_line.sort(function(a, b){
+            var nameA=a.date.toLowerCase(), nameB=b.date.toLowerCase()
+            if (nameA < nameB) //sort string ascending
+                return -1 
+            if (nameA > nameB)
+                return 1
+            return 0 //default return value (no sorting)
+        });
+
+        return_array_line_s.sort(function(a, b){
+            var nameA=a.date.toLowerCase(), nameB=b.date.toLowerCase()
+            if (nameA < nameB) //sort string ascending
+                return -1 
+            if (nameA > nameB)
+                return 1
+            return 0 //default return value (no sorting)
+        });
+
+        return_array_line_z.sort(function(a, b){
+            var nameA=a.date.toLowerCase(), nameB=b.date.toLowerCase()
+            if (nameA < nameB) //sort string ascending
+                return -1 
+            if (nameA > nameB)
+                return 1
+            return 0 //default return value (no sorting)
+        });
+
 		res.render('home.ejs', {
 			sales_zone:return_array_zone,
 			sales_state:return_array_state,
@@ -169,6 +244,9 @@ exports.home = function(req, res) {
 			sales_date:return_array_date,
 			sales_date_s:return_array_date_s,
 			sales_date_z:return_array_date_z,
+			sales_line:return_array_line,
+			sales_line_z:return_array_line_z,
+			sales_line_s:return_array_line_s,
 			constants : constants,
 			error : req.flash("error"),
 			success: req.flash("success"),
